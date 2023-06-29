@@ -109,4 +109,20 @@ class MemberRepositoryTest {
         List<Member> top3HelloBy = memberRepository.findTop3HelloBy();
     }
 
+    @Test
+    public void 리포지토리_메소드에_쿼리_정의() throws Exception {
+        //given
+        Member member1 = new Member("member1", 10);
+        Member member2 = new Member("member2", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        //when
+        List<Member> findMembers = memberRepository.findUser("member1", 10);
+
+        //then
+        assertEquals(findMembers.get(0).getUsername(), member1.getUsername());
+        assertEquals(findMembers.get(0), member1);
+    }
+
 }
