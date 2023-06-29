@@ -7,6 +7,10 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id","username", "age"})
+@NamedQuery(
+        name = "Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+) /** NamedQuery는 어플리케이션 로딩 시점에 쿼리를 파싱해보기 때문에, em.createQuery와 달리 로딩시점에 오류를 잡을 수 있다는 장점이 있음. **/
 public class Member {
     @Id @GeneratedValue
     @Column(name = "member_id")
