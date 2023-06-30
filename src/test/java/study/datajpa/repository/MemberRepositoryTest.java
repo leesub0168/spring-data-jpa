@@ -9,9 +9,9 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -179,6 +179,25 @@ class MemberRepositoryTest {
 
         //then
         assertEquals(2, result.size());
+    }
+
+    @Test
+    public void returnType() throws Exception {
+        //given
+        Member member1 = new Member("member1", 10);
+        Member member2 = new Member("member2", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        //when
+        List<Member> result1 = memberRepository.findListByUsername("member1");
+        Member result2 = memberRepository.findMemberByUsername("member1");
+        Optional<Member> result3 = memberRepository.findOptionalByUsername("member1");
+
+        //then
+        assertEquals(1, result1.size());
+        assertEquals(result2.getUsername(), member1.getUsername());
+        assertEquals(result3.get().getUsername(), member1.getUsername());
     }
 
 }
