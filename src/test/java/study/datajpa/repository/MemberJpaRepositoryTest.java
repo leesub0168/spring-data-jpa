@@ -90,4 +90,28 @@ class MemberJpaRepositoryTest {
         assertEquals(result.get(0).getUsername(), member2.getUsername());
         assertEquals(result.get(0), member2);
     }
+
+    @Test
+    public void 페이징() throws Exception {
+        //given
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 10));
+        memberJpaRepository.save(new Member("member3", 10));
+        memberJpaRepository.save(new Member("member4", 10));
+        memberJpaRepository.save(new Member("member5", 10));
+        memberJpaRepository.save(new Member("member6", 10));
+        memberJpaRepository.save(new Member("member7", 10));
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+
+        //when
+        List<Member> result = memberJpaRepository.findByPage(age, offset, limit);
+        Long totalCount = memberJpaRepository.totalCount(age);
+
+        //then
+        assertEquals(3, result.size());
+        assertEquals(7, totalCount);
+    }
 }
