@@ -3,6 +3,10 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -198,6 +202,35 @@ class MemberRepositoryTest {
         assertEquals(1, result1.size());
         assertEquals(result2.getUsername(), member1.getUsername());
         assertEquals(result3.get().getUsername(), member1.getUsername());
+    }
+
+    @Test
+    public void 페이징() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        memberRepository.save(new Member("member6", 10));
+        memberRepository.save(new Member("member7", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.ASC, "username"));
+
+        //when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+        /** Page의 Map 기능으로 엔티티를 Dto로 변환할 수 있음 */
+        Page<MemberDto> memberDtos = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+
+        List<Member> content = page.getContent();
+
+//        //then
+        assertEquals(3, page.getNumberOfElements());
+        assertEquals(7, page.getTotalElements());
+        assertEquals(0, page.getNumber());
+        assertEquals(3, page.getTotalPages());
+        assertTrue(page.isFirst());
     }
 
 }

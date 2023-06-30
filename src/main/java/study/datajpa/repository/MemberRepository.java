@@ -1,5 +1,8 @@
 package study.datajpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -42,6 +45,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findListByUsername(String username);       /** 결과값이 없으면 빈 컬렉션을 반환해줌 NullPoint 발생 방지 */
     Member findMemberByUsername(String username);           /** JPA는 결과가 없으면 NoResultException을 던지지만, Spring Data JPA는 결과값이 없으면 Null 반환 */
-    Optional<Member> findOptionalByUsername(String username);   /** 결과가 1개 이상이면 IncorrectResultSizeDataAccessException 발생 */
+    Optional<Member> findOptionalByUsername(String username);    /** 결과가 1개 이상이면 IncorrectResultSizeDataAccessException 발생 */
 
+    /**
+     * Page -> totalCount 까지 포함하여 결과 반환
+     * Slice -> totalCount 포함X. limit + 1로 화면에서 스크롤 레이지 로딩방식을 쓸때 사용.
+     * Page는 Slice를 상속받는 관계이다.
+     *
+     * 페이징시 결과값을 그냥 List로 받는것도 가능. 단 totalCount 는 포함 X
+     * 쿼리가 복잡해질 경우, count용 쿼리를 따로 설정할 수 있음.
+     * */
+    @Query(value = "select m from Member m left join m.team t",
+            countQuery = "select count(m.username) from Member m")
+    Page<Member> findByAge(int age, Pageable pageable);
 }
