@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
@@ -19,6 +20,9 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    TeamRepository teamRepository;
 
     @Test
     public void testMember() throws Exception {
@@ -123,6 +127,41 @@ class MemberRepositoryTest {
         //then
         assertEquals(findMembers.get(0).getUsername(), member1.getUsername());
         assertEquals(findMembers.get(0), member1);
+    }
+
+    @Test
+    public void findUsernameList() throws Exception {
+        //given
+        Member member1 = new Member("member1", 10);
+        Member member2 = new Member("member2", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        //when
+        List<String> usernameList = memberRepository.findUsernameList();
+
+        //then
+        assertEquals(2, usernameList.size());
+    }
+
+    @Test
+    public void findMemberDto() throws Exception {
+        //given
+        Team team = new Team("teamA");
+        teamRepository.save(team);
+
+        Member member1 = new Member("member1", 10);
+        member1.changeTeam(team);
+        memberRepository.save(member1);
+
+        //when
+        List<MemberDto> memberDto = memberRepository.findMemberDto();
+
+        //then
+        assertEquals(1, memberDto.size());
+        assertEquals(memberDto.get(0).getId(), member1.getId());
+        assertEquals(memberDto.get(0).getTeamName(), member1.getTeam().getName());
+        assertEquals(memberDto.get(0).getUsername(), member1.getUsername());
     }
 
 }
