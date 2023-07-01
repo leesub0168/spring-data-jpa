@@ -2,14 +2,13 @@ package study.datajpa.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
-import javax.swing.text.html.Option;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -58,4 +57,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "select m from Member m left join m.team t",
             countQuery = "select count(m.username) from Member m")
     Page<Member> findByAge(int age, Pageable pageable);
+
+    /**
+     * 벌크성 업데이트 쿼리는 영속성 컨텍스트를 무시하고 쿼리를 날리기 때문에,
+     * 같은 트랜잭션에서 추가적인 조회등을 하는 경우, 영속성 컨텍스트를 초기화 하고 수행해야한다.
+     * 마이바티스등 부가적인 걸 사용해서 쿼리를 날리는 경우도, 영속성 컨텍스트에서 인식 하지 못하기 때문에 초기화하는 과정 필요
+     * @Modifying(clearAutomatically = true) 해당 옵션을 사용하면 쿼리가 나간후에 자동으로 초기화 해줌.
+     * */
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+    int bulkAgePlus(@Param("age") int age);
 }
