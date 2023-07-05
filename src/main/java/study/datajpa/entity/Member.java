@@ -12,7 +12,7 @@ import lombok.*;
         query = "select m from Member m where m.username = :username"
 ) /** NamedQuery는 어플리케이션 로딩 시점에 쿼리를 파싱해보기 때문에, em.createQuery와 달리 로딩시점에 오류를 잡을 수 있다는 장점이 있음. **/
 @NamedEntityGraph(name = "Member.all", attributeNodes = @NamedAttributeNode("team"))
-public class Member {
+public class Member extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "member_id")
     private Long id;
