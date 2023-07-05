@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -287,5 +286,34 @@ class MemberRepositoryTest {
             System.out.println("member.teamClass = " + member.getTeam().getClass());
             System.out.println("member.team = " + member.getTeam().getName());
         }
+    }
+
+    @Test
+    public void queryHint() throws Exception {
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        //then
+        em.flush();
+    }
+
+    @Test
+    public void lock() throws Exception {
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> findMember = memberRepository.findLockByUsername("member1");
+
     }
 }
