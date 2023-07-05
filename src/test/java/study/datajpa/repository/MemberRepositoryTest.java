@@ -258,4 +258,34 @@ class MemberRepositoryTest {
         assertEquals(4, count);
         assertEquals(41, result.get(0).getAge());
     }
+
+    @Test
+    public void findFetchJoin() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        teamRepository.save(teamA);
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10);
+        member1.changeTeam(teamA);
+        memberRepository.save(member1);
+
+        Member member2 = new Member("member2", 10);
+        member2.changeTeam(teamB);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findEntityGraphByUsername("member1");
+
+        //then
+        for (Member member : members) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.teamClass = " + member.getTeam().getClass());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+    }
 }
